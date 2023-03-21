@@ -1,8 +1,8 @@
 import React from "react";
-import { MyProps } from "./types";
+import { IPadButtonProps } from "./types";
 import { Pannel } from "./styles";
 
-export default class PadBtn extends React.Component<MyProps> {
+export default class PadBtn extends React.Component<IPadButtonProps> {
   render() {
     return (
       <Pannel>

@@ -1,4 +1,4 @@
-export interface MyProps {
+export interface DiagramProps {
     currentFloor: number;
     floors: string[];
 }

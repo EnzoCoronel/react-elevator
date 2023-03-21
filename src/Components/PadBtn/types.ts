@@ -1,4 +1,4 @@
-export interface MyProps {
+export interface IPadButtonProps {
     currentFloor: number;
     floors: string[];
     upFloorFunction: () => void;
