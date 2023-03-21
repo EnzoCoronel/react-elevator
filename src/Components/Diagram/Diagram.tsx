@@ -1,8 +1,8 @@
 import React from "react";
-import { MyProps } from "./types";
+import { DiagramProps } from "./types";
 import { Building, Lift, Floor, Shaft, FloorBtns } from "./styles";
 
-export default class Diagram extends React.Component<MyProps> {
+export default class Diagram extends React.Component<DiagramProps> {
   render() {
     return (
       <Building>
