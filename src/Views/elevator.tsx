@@ -8,6 +8,7 @@ interface IProps {}
 interface IState {
   count: number;
   floors: string[];
+  moving: string;
 }
 
 class Elevator extends React.Component<IProps, IState> {
@@ -17,25 +18,62 @@ class Elevator extends React.Component<IProps, IState> {
     this.state = {
       count: 0,
       floors: ["T", "1", "2", "3", "4"],
+      moving: "right",
     };
   }
 
-  increaseFloor = () => {
-    this.setState((state) => ({
-      count: state.count + 1,
+  callAndGo = (btnFloor: number, goUp: boolean) => {
+    this.setState(() => ({
+      moving: "left",
     }));
-  };
-
-  decreaseFloor = () => {
-    this.setState((state) => ({
-      count: state.count - 1,
-    }));
+    setTimeout(() => {
+      this.setState(() => ({
+        count: this.state.floors.length - btnFloor - 1,
+      }));
+    }, 2000);
+    setTimeout(() => {
+      this.setState(() => ({
+        moving: "right",
+      }));
+    }, 4000);
+    setTimeout(() => {
+      this.setState(() => ({
+        moving: "left",
+      }));
+    }, 6000);
+    setTimeout(() => {
+      if (goUp === true) {
+        this.setState((state) => ({
+          count: state.count + 1,
+        }));
+      }
+      else{
+        this.setState((state) => ({
+          count: state.count - 1,
+        }));
+      }
+    }, 8000);
+    setTimeout(() => {
+      this.setState(() => ({
+        moving: "right",
+      }));
+    }, 10000);
   };
 
   choseFloor = (newFloor: number) => {
     this.setState(() => ({
-      count: newFloor,
+      moving: "left",
     }));
+    setTimeout(() => {
+      this.setState(() => ({
+        count: newFloor,
+      }));
+    }, 2000);
+    setTimeout(() => {
+      this.setState(() => ({
+        moving: "right",
+      }));
+    }, 4000);
   };
 
   render() {
@@ -43,12 +81,15 @@ class Elevator extends React.Component<IProps, IState> {
       <Grid>
         <PadBtn
           currentFloor={this.state.count}
-          upFloorFunction={this.increaseFloor}
-          downFloorFunction={this.decreaseFloor}
-          choseFloorFunction={this.choseFloor}
           floors={this.state.floors}
+          choseFloor={this.choseFloor}
         />
-        <Diagram currentFloor={this.state.count} floors={this.state.floors} />
+        <Diagram
+          currentFloor={this.state.count}
+          floors={this.state.floors}
+          moving={this.state.moving}
+          callAndGo={this.callAndGo}
+        />
       </Grid>
     );
   }
