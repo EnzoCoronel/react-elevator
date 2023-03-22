@@ -17,10 +17,16 @@ class Elevator extends React.Component<IProps, IState> {
 
     this.state = {
       count: 0,
-      floors: ["T", "1", "2", "3", "4"],
+      floors: ["G", "1", "2", "3", "4"],
       moving: "right",
+      //isGoingUp: true,
+      //idle: true,
+      //queue: [],
     };
   }
+
+  //changeDirection
+  //reverseQueue
 
   callAndGo = (btnFloor: number, goUp: boolean) => {
     this.setState(() => ({
@@ -36,6 +42,7 @@ class Elevator extends React.Component<IProps, IState> {
         moving: "right",
       }));
     }, 4000);
+    //here onwards, need improvement
     setTimeout(() => {
       this.setState(() => ({
         moving: "left",
@@ -46,8 +53,7 @@ class Elevator extends React.Component<IProps, IState> {
         this.setState((state) => ({
           count: state.count + 1,
         }));
-      }
-      else{
+      } else {
         this.setState((state) => ({
           count: state.count - 1,
         }));
@@ -79,6 +85,13 @@ class Elevator extends React.Component<IProps, IState> {
   render() {
     return (
       <Grid>
+        <link
+          rel="stylesheet"
+          media="screen"
+          href="https://fontlibrary.org//face/segment7"
+          type="text/css"
+        />
+
         <PadBtn
           currentFloor={this.state.count}
           floors={this.state.floors}

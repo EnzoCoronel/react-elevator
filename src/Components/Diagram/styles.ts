@@ -1,6 +1,5 @@
-import { transform } from "typescript";
 import { Transform } from "./types";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 export const Building = styled.div`
   background-color: blue;
@@ -37,4 +36,4 @@ export const Lift = styled.div<Transform>`
   height: 20%;
   transform: translate(0, ${(props: Transform) => 400 - props.move * 100}%);
   transition: all 2s ease;
-`;
+`; //use animation

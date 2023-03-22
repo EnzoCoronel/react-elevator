@@ -18,7 +18,7 @@ export default class Diagram extends React.Component<DiagramProps> {
               <Floor key={index}>
                 <FloorBtns>
                   <button onClick={() => this.props.callAndGo(index, false)}>
-                    Decrease
+                    Up
                   </button>
                 </FloorBtns>
               </Floor>
@@ -30,7 +30,7 @@ export default class Diagram extends React.Component<DiagramProps> {
               <Floor key={index}>
                 <FloorBtns>
                   <button onClick={() => this.props.callAndGo(index, true)}>
-                    Increase
+                    Down
                   </button>
                 </FloorBtns>
               </Floor>
@@ -41,10 +41,10 @@ export default class Diagram extends React.Component<DiagramProps> {
             <Floor key={index}>
               <FloorBtns>
                 <button onClick={() => this.props.callAndGo(index, true)}>
-                  Increase
+                  Up
                 </button>
                 <button onClick={() => this.props.callAndGo(index, false)}>
-                  Decrease
+                  Down
                 </button>
               </FloorBtns>
             </Floor>
