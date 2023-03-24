@@ -5,10 +5,19 @@ import { Grid } from "../styles";
 
 interface IProps {}
 
+interface queue {
+  newCount: number;
+  isGoingUp: boolean;
+}
 interface IState {
   count: number;
+  newCount: number;
   floors: string[];
   moving: string;
+  isGoingUp: boolean;
+  idle: boolean;
+  queue: queue[];
+  stage: number;
 }
 
 class Elevator extends React.Component<IProps, IState> {
@@ -17,69 +26,87 @@ class Elevator extends React.Component<IProps, IState> {
 
     this.state = {
       count: 0,
+      newCount: 0,
       floors: ["G", "1", "2", "3", "4"],
       moving: "right",
-      //isGoingUp: true,
-      //idle: true,
-      //queue: [],
+      isGoingUp: true,
+      idle: true,
+      queue: [],
+      stage: 1,
     };
   }
 
   //changeDirection
   //reverseQueue
-
-  callAndGo = (btnFloor: number, goUp: boolean) => {
+  
+  addToQueue = (newFloor: number, newDirection: boolean) => {
+    const newRequest = { count: newFloor, isGoingUp: newDirection };
     this.setState(() => ({
-      moving: "left",
+      queue: [
+        ...this.state.queue,
+        { newCount: newFloor, isGoingUp: newDirection },
+      ],
     }));
-    setTimeout(() => {
-      this.setState(() => ({
-        count: this.state.floors.length - btnFloor - 1,
-      }));
-    }, 2000);
-    setTimeout(() => {
-      this.setState(() => ({
-        moving: "right",
-      }));
-    }, 4000);
-    //here onwards, need improvement
-    setTimeout(() => {
+    if (!this.state.queue[0])
       this.setState(() => ({
         moving: "left",
+        newCount: newFloor,
+        isGoingUp: newDirection,
       }));
-    }, 6000);
-    setTimeout(() => {
-      if (goUp === true) {
-        this.setState((state) => ({
-          count: state.count + 1,
-        }));
-      } else {
-        this.setState((state) => ({
-          count: state.count - 1,
-        }));
-      }
-    }, 8000);
-    setTimeout(() => {
+    console.log(this.state);
+  };
+
+  nextInQueue = () => {
+    if (!this.state.queue[1]) {
+      this.setState(() => ({
+        moving: "left",
+        newCount: 0,
+        isGoingUp: false,
+      }))
+    } else {
+      this.setState(() => ({
+        moving: "left",
+        newCount: this.state.queue[1].newCount,
+        isGoingUp: this.state.queue[1].isGoingUp,
+        queue: this.state.queue.slice(1),
+      }));
+    }
+  };
+
+  onTransitionEnd = () => {
+    console.log(this.state.stage);
+    if (this.state.stage === 1) {
+      this.setState(() => ({
+        count: this.state.newCount,
+        stage: this.state.stage + 1,
+      }));
+    }
+    if (this.state.stage === 2) {
       this.setState(() => ({
         moving: "right",
+        stage: this.state.stage + 1,
       }));
-    }, 10000);
+    }
+    if (this.state.stage === 3) {
+      if (this.state.queue.length) this.nextInQueue();
+      this.setState(() => ({
+        stage: 1,
+      }));
+    }
+  };
+
+  callElevator = (btnFloor: number, goUp: boolean) => {
+    this.addToQueue(btnFloor, goUp);
+    if (this.state.queue.length === 1) this.nextInQueue();
+    // this.setState(() => ({
+    //   newCount: this.state.floors.length - btnFloor - 1,
+    //   moving: "left",
+    //   isGoingUp: goUp,
+    // }));
   };
 
   choseFloor = (newFloor: number) => {
-    this.setState(() => ({
-      moving: "left",
-    }));
-    setTimeout(() => {
-      this.setState(() => ({
-        count: newFloor,
-      }));
-    }, 2000);
-    setTimeout(() => {
-      this.setState(() => ({
-        moving: "right",
-      }));
-    }, 4000);
+    this.addToQueue(newFloor, this.state.isGoingUp);
   };
 
   render() {
@@ -101,7 +128,8 @@ class Elevator extends React.Component<IProps, IState> {
           currentFloor={this.state.count}
           floors={this.state.floors}
           moving={this.state.moving}
-          callAndGo={this.callAndGo}
+          callElevator={this.callElevator}
+          handleTransitionEnd={this.onTransitionEnd}
         />
       </Grid>
     );

@@ -8,16 +8,17 @@ export default class Diagram extends React.Component<DiagramProps> {
       <Building>
         <Shaft>
           <Lift
+            onTransitionEnd={this.props.handleTransitionEnd}
             move={this.props.currentFloor}
             bgSide={this.props.moving}
           ></Lift>
         </Shaft>
         {this.props.floors.map((floor, index) => {
-          if (index == 0) {
+          if (index === 0) {
             return (
               <Floor key={index}>
                 <FloorBtns>
-                  <button onClick={() => this.props.callAndGo(index, false)}>
+                  <button onClick={() => this.props.callElevator(index, true)}>
                     Up
                   </button>
                 </FloorBtns>
@@ -25,11 +26,11 @@ export default class Diagram extends React.Component<DiagramProps> {
             );
           }
 
-          if (index == this.props.floors.length - 1) {
+          if (index === this.props.floors.length - 1) {
             return (
               <Floor key={index}>
                 <FloorBtns>
-                  <button onClick={() => this.props.callAndGo(index, true)}>
+                  <button onClick={() => this.props.callElevator(index, false)}>
                     Down
                   </button>
                 </FloorBtns>
@@ -40,10 +41,10 @@ export default class Diagram extends React.Component<DiagramProps> {
           return (
             <Floor key={index}>
               <FloorBtns>
-                <button onClick={() => this.props.callAndGo(index, true)}>
+                <button onClick={() => this.props.callElevator(index, true)}>
                   Up
                 </button>
-                <button onClick={() => this.props.callAndGo(index, false)}>
+                <button onClick={() => this.props.callElevator(index, false)}>
                   Down
                 </button>
               </FloorBtns>
