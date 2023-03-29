@@ -7,7 +7,7 @@ interface IProps {}
 
 interface queue {
   newCount: number;
-  isGoingUp: boolean;
+  goUpRequest: boolean;
 }
 interface IState {
   count: number;
@@ -36,45 +36,91 @@ class Elevator extends React.Component<IProps, IState> {
     };
   }
 
-  //changeDirection
-  //reverseQueue
-  
+  //show if it is going up row down
+  //show pressed btns
+
+  findNextFloor = (direction: boolean) => {
+    this.state.queue.sort(function (a, b) {
+      return a.newCount - b.newCount;
+    }); //create an utils for these
+
+    if (direction === true) {
+      return this.state.queue.find(
+        (element) => element.newCount > this.state.count
+      );
+    }
+
+    this.state.queue.sort(function (a, b) {
+      return b.newCount - a.newCount;
+    }); //create an utils for these
+
+    if (direction === false) {
+      return this.state.queue.find(
+        (element) => element.newCount < this.state.count
+      );
+    }
+  };
+
   addToQueue = (newFloor: number, newDirection: boolean) => {
-    const newRequest = { count: newFloor, isGoingUp: newDirection };
+    let alredyPressed = this.state.queue.find(
+      (element) => element.newCount === newFloor
+    );
+    if (alredyPressed) return;
     this.setState(() => ({
       queue: [
         ...this.state.queue,
-        { newCount: newFloor, isGoingUp: newDirection },
+        { newCount: newFloor, goUpRequest: newDirection },
       ],
     }));
+
     if (!this.state.queue[0])
       this.setState(() => ({
         moving: "left",
         newCount: newFloor,
         isGoingUp: newDirection,
       }));
-    console.log(this.state);
+    //console.log(this.state);
   };
 
   nextInQueue = () => {
+    let found: queue | undefined;
+    let foundIndex: number;
+
     if (!this.state.queue[1]) {
       this.setState(() => ({
         moving: "left",
         newCount: 0,
         isGoingUp: false,
-      }))
-    } else {
-      this.setState(() => ({
-        moving: "left",
-        newCount: this.state.queue[1].newCount,
-        isGoingUp: this.state.queue[1].isGoingUp,
         queue: this.state.queue.slice(1),
       }));
+      return;
     }
+
+    found = this.findNextFloor(this.state.isGoingUp);
+
+    if (!found) {
+      let oppositeDirection = this.state.isGoingUp ? false : true;
+      found = this.findNextFloor(oppositeDirection);
+      this.setState(() => ({
+        isGoingUp: oppositeDirection,
+      }));
+    }
+
+    foundIndex = this.state.queue.findIndex((element) => element === found);
+
+    this.setState(() => ({
+      moving: "left",
+      newCount: this.state.queue[foundIndex].newCount,
+      isGoingUp: this.state.queue[foundIndex].goUpRequest,
+      queue: this.state.queue.filter(
+        (item) => item.newCount != this.state.count
+      ),
+    }));
   };
 
   onTransitionEnd = () => {
-    console.log(this.state.stage);
+    //console.log(this.state.stage);
+    console.log(this.state.queue);
     if (this.state.stage === 1) {
       this.setState(() => ({
         count: this.state.newCount,
@@ -96,13 +142,7 @@ class Elevator extends React.Component<IProps, IState> {
   };
 
   callElevator = (btnFloor: number, goUp: boolean) => {
-    this.addToQueue(btnFloor, goUp);
-    if (this.state.queue.length === 1) this.nextInQueue();
-    // this.setState(() => ({
-    //   newCount: this.state.floors.length - btnFloor - 1,
-    //   moving: "left",
-    //   isGoingUp: goUp,
-    // }));
+    this.addToQueue(this.state.floors.length - 1 - btnFloor, goUp);
   };
 
   choseFloor = (newFloor: number) => {

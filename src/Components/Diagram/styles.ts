@@ -14,7 +14,7 @@ export const Floor = styled.div`
   background-color: burlywood;
   width: 100%;
   height: 20%;
-`;
+`; //border-bottom: 1px solid black;
 
 export const FloorBtns = styled.div`
   position: absolute;
