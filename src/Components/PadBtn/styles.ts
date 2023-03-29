@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Transform } from "./types";
 
 export const Pannel = styled.div`
   display: grid;
@@ -22,6 +23,10 @@ export const FloorDisplay = styled.div`
   font-style: italic;
 `;
 
-export const PannelBtn = styled.button`
-  border-radius: 50%:
+export const PannelBtn = styled.button<Transform>`
+  font-size: 32px;
+  border-radius: 50%;
+  ${({ active }) => active && `
+  color: red;
+  `}
 `;

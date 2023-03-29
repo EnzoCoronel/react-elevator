@@ -7,7 +7,7 @@ interface IProps {}
 
 interface queue {
   newCount: number;
-  goUpRequest: boolean;
+  goUpRequest?: boolean;
 }
 interface IState {
   count: number;
@@ -40,28 +40,34 @@ class Elevator extends React.Component<IProps, IState> {
   //show pressed btns
 
   findNextFloor = (direction: boolean) => {
-    this.state.queue.sort(function (a, b) {
-      return a.newCount - b.newCount;
-    }); //create an utils for these
+    let min = this.state.count,
+      max = this.state.count,
+      amount = 0,
+      closest;
 
     if (direction === true) {
-      return this.state.queue.find(
-        (element) => element.newCount > this.state.count
-      );
+      this.state.queue.forEach((element) => {
+        if (element.newCount > this.state.count) amount++;
+        if (element.newCount > max) max = element.newCount;
+        if (element.newCount <= max && element.newCount > this.state.count)
+          closest = element;
+      });
+      if (amount > 0) return closest;
     }
 
-    this.state.queue.sort(function (a, b) {
-      return b.newCount - a.newCount;
-    }); //create an utils for these
-
     if (direction === false) {
-      return this.state.queue.find(
-        (element) => element.newCount < this.state.count
-      );
+      this.state.queue.forEach((element) => {
+        if (element.newCount < this.state.count) amount++;
+        if (element.newCount < min) min = element.newCount;
+        if (element.newCount >= min && element.newCount < this.state.count)
+          closest = element;
+      });
+      if (amount > 0) return closest;
     }
   };
 
-  addToQueue = (newFloor: number, newDirection: boolean) => {
+  addToQueue = (newFloor: number, newDirection?: boolean) => {
+    console.log(this.state.queue.map((element) => element.newCount));
     let alredyPressed = this.state.queue.find(
       (element) => element.newCount === newFloor
     );
@@ -77,7 +83,7 @@ class Elevator extends React.Component<IProps, IState> {
       this.setState(() => ({
         moving: "left",
         newCount: newFloor,
-        isGoingUp: newDirection,
+        isGoingUp: true,
       }));
     //console.log(this.state);
   };
@@ -111,7 +117,6 @@ class Elevator extends React.Component<IProps, IState> {
     this.setState(() => ({
       moving: "left",
       newCount: this.state.queue[foundIndex].newCount,
-      isGoingUp: this.state.queue[foundIndex].goUpRequest,
       queue: this.state.queue.filter(
         (item) => item.newCount != this.state.count
       ),
@@ -160,8 +165,10 @@ class Elevator extends React.Component<IProps, IState> {
         />
 
         <PadBtn
+          direction={this.state.isGoingUp}
           currentFloor={this.state.count}
           floors={this.state.floors}
+          pressedBtns={this.state.queue.map((element) => element.newCount)}
           choseFloor={this.choseFloor}
         />
         <Diagram

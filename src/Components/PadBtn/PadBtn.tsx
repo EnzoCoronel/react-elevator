@@ -7,11 +7,17 @@ export default class PadBtn extends React.Component<IPadButtonProps> {
     return (
       <Pannel>
         <FloorDisplay>
-        {this.props.currentFloor === 0 ? "G" : this.props.currentFloor}
+          {this.props.direction === true ? "↑ " : "↓ "}
+          {this.props.currentFloor === 0 ? "G" : this.props.currentFloor}
         </FloorDisplay>
         {this.props.floors.map((floor, index) => {
           return (
-            <PannelBtn onClick={() => this.props.choseFloor(index)}>
+            <PannelBtn
+              onClick={() => this.props.choseFloor(index)}
+              active={this.props.pressedBtns.find(
+                (element) => element === index
+              )}
+            >
               {floor}
             </PannelBtn>
           );
