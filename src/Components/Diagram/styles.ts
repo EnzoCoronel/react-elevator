@@ -1,4 +1,4 @@
-import { Transform } from './types';
+import { Transform } from "./types";
 import styled from "styled-components";
 
 export const Building = styled.div`
@@ -16,6 +16,11 @@ export const Floor = styled.div`
   height: 20%;
 `;
 
+export const FloorBtns = styled.div`
+  position: absolute;
+  right: 0;
+`;
+
 export const Shaft = styled.div`
   background-color: yellow;
   position: absolute;
@@ -25,7 +30,10 @@ export const Shaft = styled.div`
 `;
 
 export const Lift = styled.div<Transform>`
-  background-color: gray;
+  background: linear-gradient(to left, white 50%, gray 50%);
+  background-position: ${(props: Transform) => props.bgSide};
+  background-size: 200% 100%;
   height: 20%;
-  transform: translate(0, ${(props:Transform) => 400 - props.move*100}%);
-`;
+  transform: translate(0, ${(props: Transform) => 400 - props.move * 100}%);
+  transition: all 2s ease;
+`; //use animation
