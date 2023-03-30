@@ -35,5 +35,5 @@ export const Lift = styled.div<Transform>`
   background-size: 200% 100%;
   height: 20%;
   transform: translate(0, ${(props: Transform) => 400 - props.move * 100}%);
-  transition: all 2s ease;
+  transition: all 2s ease, transform ${(props: Transform) => props.duration}s linear;
 `;

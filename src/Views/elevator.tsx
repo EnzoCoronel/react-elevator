@@ -15,7 +15,7 @@ interface IState {
   floors: string[];
   moving: string;
   isGoingUp: boolean;
-  idle: boolean;
+  seconds: number;
   queue: queue[];
   stage: number;
 }
@@ -30,7 +30,7 @@ class Elevator extends React.Component<IProps, IState> {
       floors: ["G", "1", "2", "3", "4"],
       moving: "right",
       isGoingUp: true,
-      idle: true,
+      seconds: 0,
       queue: [],
       stage: 1,
     };
@@ -44,24 +44,35 @@ class Elevator extends React.Component<IProps, IState> {
       closest!: queue; //the use of "!" is some sort of gambiarra to trick typescript?
 
     if (direction === true) {
-      this.state.queue.forEach((element, index) => {
+      this.state.queue.forEach((element) => {
         if (element.newCount > this.state.count) {
           amount++;
           if (!closest) closest = element;
-          if (element.newCount < closest.newCount) closest = element;
+          if (
+            element.newCount < closest.newCount &&
+            closest.goUpRequest === true
+          )
+            closest = element;
+          else if (closest.goUpRequest != true) closest = element;
         }
       });
       if (amount > 0) return closest;
     }
 
     if (direction === false) {
-      this.state.queue.forEach((element, index) => {
+      this.state.queue.forEach((element) => {
         if (element.newCount < this.state.count) {
           amount++;
           if (!closest) closest = element;
-          else if (element.newCount > closest.newCount) closest = element;
+          else if (
+            element.newCount > closest.newCount &&
+            closest.goUpRequest === false
+          )
+            closest = element;
+          else if (closest.goUpRequest != false) closest = element;
         }
       });
+
       if (amount > 0) return closest;
     }
   };
@@ -78,13 +89,14 @@ class Elevator extends React.Component<IProps, IState> {
       ],
     }));
 
+    //there is a bug where if you press a btn to fast after the idle-ground floor animation ends,
+    //it will close and be stuck
     if (!this.state.queue[0])
       this.setState(() => ({
         moving: "left",
         newCount: newFloor,
         isGoingUp: true,
       }));
-    //console.log(this.state);
   };
 
   nextInQueue = () => {
@@ -102,7 +114,6 @@ class Elevator extends React.Component<IProps, IState> {
     }
 
     found = this.findNextFloor(this.state.isGoingUp);
-    console.log(found);
 
     if (!found) {
       let oppositeDirection = this.state.isGoingUp ? false : true;
@@ -123,11 +134,14 @@ class Elevator extends React.Component<IProps, IState> {
     }));
   };
 
+  diff = (a: number, b: number) => (a > b ? a - b : b - a);
+
   onTransitionEnd = () => {
     if (this.state.stage === 1) {
       this.setState(() => ({
         count: this.state.newCount,
         stage: this.state.stage + 1,
+        seconds: this.diff(this.state.count, this.state.newCount)
       }));
     }
     if (this.state.stage === 2) {
@@ -137,10 +151,12 @@ class Elevator extends React.Component<IProps, IState> {
       }));
     }
     if (this.state.stage === 3) {
-      if (this.state.queue.length) this.nextInQueue();
-      this.setState(() => ({
-        stage: 1,
-      }));
+      setTimeout(() => {
+        if (this.state.queue.length) this.nextInQueue();
+        this.setState(() => ({
+          stage: 1,
+        }));
+      }, 2000);
     }
   };
 
@@ -171,6 +187,7 @@ class Elevator extends React.Component<IProps, IState> {
         />
         <Diagram
           currentFloor={this.state.count}
+          diff={this.state.seconds}
           floors={this.state.floors}
           moving={this.state.moving}
           callElevator={this.callElevator}
