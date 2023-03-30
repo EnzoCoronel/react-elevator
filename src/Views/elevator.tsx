@@ -40,38 +40,37 @@ class Elevator extends React.Component<IProps, IState> {
   //show pressed btns
 
   findNextFloor = (direction: boolean) => {
-    let min = this.state.count,
-      max = this.state.count,
-      amount = 0,
-      closest;
+    let amount = 0,
+      closest!: queue; //the use of "!" is some sort of gambiarra to trick typescript?
 
     if (direction === true) {
-      this.state.queue.forEach((element) => {
-        if (element.newCount > this.state.count) amount++;
-        if (element.newCount > max) max = element.newCount;
-        if (element.newCount <= max && element.newCount > this.state.count)
-          closest = element;
+      this.state.queue.forEach((element, index) => {
+        if (element.newCount > this.state.count) {
+          amount++;
+          if (!closest) closest = element;
+          if (element.newCount < closest.newCount) closest = element;
+        }
       });
       if (amount > 0) return closest;
     }
 
     if (direction === false) {
-      this.state.queue.forEach((element) => {
-        if (element.newCount < this.state.count) amount++;
-        if (element.newCount < min) min = element.newCount;
-        if (element.newCount >= min && element.newCount < this.state.count)
-          closest = element;
+      this.state.queue.forEach((element, index) => {
+        if (element.newCount < this.state.count) {
+          amount++;
+          if (!closest) closest = element;
+          else if (element.newCount > closest.newCount) closest = element;
+        }
       });
       if (amount > 0) return closest;
     }
   };
 
   addToQueue = (newFloor: number, newDirection?: boolean) => {
-    console.log(this.state.queue.map((element) => element.newCount));
     let alredyPressed = this.state.queue.find(
       (element) => element.newCount === newFloor
     );
-    if (alredyPressed) return;
+    if (alredyPressed || this.state.count === newFloor) return;
     this.setState(() => ({
       queue: [
         ...this.state.queue,
@@ -103,6 +102,7 @@ class Elevator extends React.Component<IProps, IState> {
     }
 
     found = this.findNextFloor(this.state.isGoingUp);
+    console.log(found);
 
     if (!found) {
       let oppositeDirection = this.state.isGoingUp ? false : true;
@@ -124,8 +124,6 @@ class Elevator extends React.Component<IProps, IState> {
   };
 
   onTransitionEnd = () => {
-    //console.log(this.state.stage);
-    console.log(this.state.queue);
     if (this.state.stage === 1) {
       this.setState(() => ({
         count: this.state.newCount,
