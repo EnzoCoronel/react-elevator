@@ -14,7 +14,7 @@ export const Floor = styled.div`
   background-color: burlywood;
   width: 100%;
   height: 20%;
-`;
+`; //border-bottom: 1px solid black;
 
 export const FloorBtns = styled.div`
   position: absolute;
@@ -36,4 +36,4 @@ export const Lift = styled.div<Transform>`
   height: 20%;
   transform: translate(0, ${(props: Transform) => 400 - props.move * 100}%);
   transition: all 2s ease;
-`; //use animation
+`;

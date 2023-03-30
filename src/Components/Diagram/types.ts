@@ -2,7 +2,8 @@ export interface DiagramProps {
     currentFloor: number;
     floors: string[];
     moving: string;
-    callAndGo: (btnFloor: number, goUp: boolean) => void;
+    callElevator: (btnFloor: number, goUp: boolean) => void;
+    handleTransitionEnd: () => void;
 }
 
 export interface Transform{
