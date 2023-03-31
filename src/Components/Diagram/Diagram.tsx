@@ -50,7 +50,6 @@ export default class Diagram extends React.Component<DiagramProps> {
             onTransitionEnd={this.props.handleTransitionEnd}
             move={this.props.currentFloor}
             bgSide={this.props.moving}
-            duration={this.props.diff}
           ></Lift>
         </Shaft>
         {this.destructuring()}

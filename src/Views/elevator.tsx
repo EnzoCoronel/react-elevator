@@ -15,7 +15,6 @@ interface IState {
   floors: string[];
   moving: string;
   isGoingUp: boolean;
-  seconds: number;
   queue: queue[];
   stage: number;
 }
@@ -30,7 +29,6 @@ class Elevator extends React.Component<IProps, IState> {
       floors: ["G", "1", "2", "3", "4"],
       moving: "right",
       isGoingUp: true,
-      seconds: 0,
       queue: [],
       stage: 1,
     };
@@ -39,7 +37,7 @@ class Elevator extends React.Component<IProps, IState> {
   //show if it is going up row down
   //show pressed btns
 
-  findNextFloor = (direction: boolean) => {
+  findNextRequest = (direction: boolean) => {
     let amount = 0,
       closest!: queue; //the use of "!" is some sort of gambiarra to trick typescript?
 
@@ -113,11 +111,11 @@ class Elevator extends React.Component<IProps, IState> {
       return;
     }
 
-    found = this.findNextFloor(this.state.isGoingUp);
+    found = this.findNextRequest(this.state.isGoingUp);
 
     if (!found) {
       let oppositeDirection = this.state.isGoingUp ? false : true;
-      found = this.findNextFloor(oppositeDirection);
+      found = this.findNextRequest(oppositeDirection);
       this.setState(() => ({
         isGoingUp: oppositeDirection,
       }));
@@ -137,12 +135,25 @@ class Elevator extends React.Component<IProps, IState> {
   diff = (a: number, b: number) => (a > b ? a - b : b - a);
 
   onTransitionEnd = () => {
+    let nextFloor;
     if (this.state.stage === 1) {
-      this.setState(() => ({
-        count: this.state.newCount,
-        stage: this.state.stage + 1,
-        seconds: this.diff(this.state.count, this.state.newCount)
-      }));
+      if (this.state.newCount > this.state.count) {
+        nextFloor = this.state.count + 1;
+        this.setState(() => ({
+          count: this.state.count + 1,
+        }));
+      }
+      if (this.state.newCount < this.state.count) {
+        nextFloor = this.state.count - 1;
+        this.setState(() => ({
+          count: this.state.count - 1,
+        }));
+      }
+      if (nextFloor === this.state.newCount){
+        this.setState(() => ({
+          stage: this.state.stage + 1,
+        }));
+      }
     }
     if (this.state.stage === 2) {
       this.setState(() => ({
@@ -187,7 +198,6 @@ class Elevator extends React.Component<IProps, IState> {
         />
         <Diagram
           currentFloor={this.state.count}
-          diff={this.state.seconds}
           floors={this.state.floors}
           moving={this.state.moving}
           callElevator={this.callElevator}

@@ -41,5 +41,5 @@ export const Lift = styled.div<Transform>`
   height: 20%;
   transform: translate(0, ${(props: Transform) => 400 - props.move * 100}%);
   transition: all 2s ease,
-    transform ${(props: Transform) => props.duration}s linear;
+    transform 1s linear;
 `;
