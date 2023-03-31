@@ -22,6 +22,7 @@ export default class PadBtn extends React.Component<IPadButtonProps> {
             </PannelBtn>
           );
         })}
+        <PannelBtn onClick={() => this.props.closeDoor(1)}>{`>|<`}</PannelBtn>
       </Pannel>
     );
   }

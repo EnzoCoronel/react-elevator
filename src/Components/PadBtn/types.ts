@@ -4,8 +4,9 @@ export interface IPadButtonProps {
     floors: string[];
     pressedBtns: number[];
     choseFloor: (newFloor: number) => void;
+    closeDoor: (close: number) => void;
 }
 
 export interface Transform{
-    active: number | undefined;
+    active?: number | undefined;
 }

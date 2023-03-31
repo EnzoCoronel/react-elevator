@@ -17,6 +17,7 @@ interface IState {
   isGoingUp: boolean;
   queue: queue[];
   stage: number;
+  timeId: NodeJS.Timeout | number;
 }
 
 class Elevator extends React.Component<IProps, IState> {
@@ -31,6 +32,7 @@ class Elevator extends React.Component<IProps, IState> {
       isGoingUp: true,
       queue: [],
       stage: 1,
+      timeId: 0,
     };
   }
 
@@ -48,7 +50,7 @@ class Elevator extends React.Component<IProps, IState> {
           if (!closest) closest = element;
           if (
             element.newCount < closest.newCount &&
-            closest.goUpRequest !== false
+            element.goUpRequest !== false
           )
             closest = element;
           else if (closest.goUpRequest === false) closest = element;
@@ -64,13 +66,13 @@ class Elevator extends React.Component<IProps, IState> {
           if (!closest) closest = element;
           else if (
             element.newCount > closest.newCount &&
-            closest.goUpRequest !== true
+            element.goUpRequest !== true
           )
             closest = element;
           else if (closest.goUpRequest === true) closest = element;
         }
+        console.log("element:", element, "closest:", closest);
       });
-
       if (amount > 0) return closest;
     }
   };
@@ -125,7 +127,6 @@ class Elevator extends React.Component<IProps, IState> {
     }
 
     found = this.findNextRequest(this.state.isGoingUp);
-    console.log(found);
 
     if (!found) {
       let oppositeDirection = this.state.isGoingUp ? false : true;
@@ -134,6 +135,8 @@ class Elevator extends React.Component<IProps, IState> {
         isGoingUp: oppositeDirection,
       }));
     }
+
+    console.log("found:", found);
 
     foundIndex = this.state.queue.findIndex((element) => element === found);
 
@@ -169,12 +172,7 @@ class Elevator extends React.Component<IProps, IState> {
       }));
     }
     if (this.state.stage === 3) {
-      setTimeout(() => {
-        if (this.state.queue.length) this.nextInQueue();
-        this.setState(() => ({
-          stage: 1,
-        }));
-      }, 2000);
+      this.waitOccupant(0);
     }
   };
 
@@ -184,6 +182,31 @@ class Elevator extends React.Component<IProps, IState> {
 
   choseFloor = (newFloor: number) => {
     this.addToQueue(newFloor);
+  };
+
+  waitOccupant = (close: number) => {
+    let timeoutId: NodeJS.Timeout;
+    if (close === 0) {
+      timeoutId = setTimeout(() => {
+        if (this.state.queue.length) this.nextInQueue();
+        this.setState(() => ({
+          stage: 1,
+        }));
+      }, 5000);
+      this.setState(() => ({
+        timeId: timeoutId,
+      }));
+    }
+    if (close === 1) {
+      if (this.state.timeId) {
+        if (this.state.queue.length) this.nextInQueue();
+        this.setState(() => ({
+          stage: 1,
+          timeId: 0,
+        }));
+      }
+      clearTimeout(this.state.timeId);
+    }
   };
 
   render() {
@@ -202,6 +225,7 @@ class Elevator extends React.Component<IProps, IState> {
           floors={this.state.floors}
           pressedBtns={this.state.queue.map((element) => element.newCount)}
           choseFloor={this.choseFloor}
+          closeDoor={this.waitOccupant}
         />
         <Diagram
           currentFloor={this.state.count}
