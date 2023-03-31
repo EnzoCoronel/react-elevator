@@ -13,7 +13,7 @@ export default class Diagram extends React.Component<DiagramProps> {
               this.props.callElevator(this.props.floors.length - 1, true)
             }
           >
-            Up
+            ▲
           </button>
         </FloorBtns>
       </Floor>
@@ -21,9 +21,7 @@ export default class Diagram extends React.Component<DiagramProps> {
     let firstFloor = (
       <Floor key={0}>
         <FloorBtns>
-          <button onClick={() => this.props.callElevator(0, false)}>
-            Down
-          </button>
+          <button onClick={() => this.props.callElevator(0, false)}>▼</button>
         </FloorBtns>
       </Floor>
     );
@@ -32,10 +30,10 @@ export default class Diagram extends React.Component<DiagramProps> {
         <Floor key={index}>
           <FloorBtns>
             <button onClick={() => this.props.callElevator(index, true)}>
-              Up
+              ▲
             </button>
             <button onClick={() => this.props.callElevator(index, false)}>
-              Down
+              ▼
             </button>
           </FloorBtns>
         </Floor>

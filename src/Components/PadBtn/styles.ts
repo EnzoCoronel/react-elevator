@@ -7,6 +7,7 @@ export const Pannel = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(4, 1fr);
   margin: 1rem;
+
 `;
 
 export const FloorDisplay = styled.div`
@@ -17,15 +18,15 @@ export const FloorDisplay = styled.div`
   grid-column-end: 3;
   background-color: black;
   color: red;
-  font-size: 64px;
+  font-size: 4rem;
   font-family: "Segment7Standard";
   font-weight: normal;
   font-style: italic;
 `;
 
 export const PannelBtn = styled.button<Transform>`
-  font-size: 32px;
-  border-radius: 50%;
+  font-size: 3rem;
+  border: 1px solid black;
   ${({ active }) => active && `
   color: red;
   `}
