@@ -48,10 +48,10 @@ class Elevator extends React.Component<IProps, IState> {
           if (!closest) closest = element;
           if (
             element.newCount < closest.newCount &&
-            closest.goUpRequest === true
+            closest.goUpRequest !== false
           )
             closest = element;
-          else if (closest.goUpRequest != true) closest = element;
+          else if (closest.goUpRequest === false) closest = element;
         }
       });
       if (amount > 0) return closest;
@@ -64,10 +64,10 @@ class Elevator extends React.Component<IProps, IState> {
           if (!closest) closest = element;
           else if (
             element.newCount > closest.newCount &&
-            closest.goUpRequest === false
+            closest.goUpRequest !== true
           )
             closest = element;
-          else if (closest.goUpRequest != false) closest = element;
+          else if (closest.goUpRequest === true) closest = element;
         }
       });
 
@@ -89,7 +89,20 @@ class Elevator extends React.Component<IProps, IState> {
 
     //there is a bug where if you press a btn to fast after the idle-ground floor animation ends,
     //it will close and be stuck
-    if (!this.state.queue[0])
+    if (this.state.queue[0]) {
+      if (this.state.isGoingUp === true) {
+        if (newFloor < this.state.newCount && newDirection !== false)
+          this.setState(() => ({
+            newCount: newFloor,
+          }));
+      }
+      if (this.state.isGoingUp === false) {
+        if (newFloor > this.state.newCount && newDirection !== true)
+          this.setState(() => ({
+            newCount: newFloor,
+          }));
+      }
+    } else
       this.setState(() => ({
         moving: "left",
         newCount: newFloor,
@@ -112,6 +125,7 @@ class Elevator extends React.Component<IProps, IState> {
     }
 
     found = this.findNextRequest(this.state.isGoingUp);
+    console.log(found);
 
     if (!found) {
       let oppositeDirection = this.state.isGoingUp ? false : true;
@@ -135,21 +149,14 @@ class Elevator extends React.Component<IProps, IState> {
   diff = (a: number, b: number) => (a > b ? a - b : b - a);
 
   onTransitionEnd = () => {
-    let nextFloor;
+    let nextFloor = this.state.count;
     if (this.state.stage === 1) {
-      if (this.state.newCount > this.state.count) {
-        nextFloor = this.state.count + 1;
-        this.setState(() => ({
-          count: this.state.count + 1,
-        }));
-      }
-      if (this.state.newCount < this.state.count) {
-        nextFloor = this.state.count - 1;
-        this.setState(() => ({
-          count: this.state.count - 1,
-        }));
-      }
-      if (nextFloor === this.state.newCount){
+      if (this.state.newCount > this.state.count) nextFloor++;
+      if (this.state.newCount < this.state.count) nextFloor--;
+      this.setState(() => ({
+        count: nextFloor,
+      }));
+      if (nextFloor === this.state.newCount) {
         this.setState(() => ({
           stage: this.state.stage + 1,
         }));
@@ -176,7 +183,7 @@ class Elevator extends React.Component<IProps, IState> {
   };
 
   choseFloor = (newFloor: number) => {
-    this.addToQueue(newFloor, this.state.isGoingUp);
+    this.addToQueue(newFloor);
   };
 
   render() {
