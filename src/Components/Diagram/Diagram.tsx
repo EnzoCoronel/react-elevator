@@ -3,6 +3,45 @@ import { DiagramProps } from "./types";
 import { Building, Lift, Floor, Shaft, FloorBtns } from "./styles";
 
 export default class Diagram extends React.Component<DiagramProps> {
+  destructuring = () => {
+    let floorsInBetween = [];
+    let lastFloor = (
+      <Floor key={this.props.floors.length - 1}>
+        <FloorBtns>
+          <button
+            onClick={() =>
+              this.props.callElevator(this.props.floors.length - 1, true)
+            }
+          >
+            ▲
+          </button>
+        </FloorBtns>
+      </Floor>
+    );
+    let firstFloor = (
+      <Floor key={0}>
+        <FloorBtns>
+          <button onClick={() => this.props.callElevator(0, false)}>▼</button>
+        </FloorBtns>
+      </Floor>
+    );
+    for (let index = 1; index < this.props.floors.length - 1; index++) {
+      floorsInBetween.push(
+        <Floor key={index}>
+          <FloorBtns>
+            <button onClick={() => this.props.callElevator(index, true)}>
+              ▲
+            </button>
+            <button onClick={() => this.props.callElevator(index, false)}>
+              ▼
+            </button>
+          </FloorBtns>
+        </Floor>
+      );
+    }
+    const building: JSX.Element[] = [firstFloor, ...floorsInBetween, lastFloor];
+    return building;
+  };
   render() {
     return (
       <Building>
@@ -13,44 +52,7 @@ export default class Diagram extends React.Component<DiagramProps> {
             bgSide={this.props.moving}
           ></Lift>
         </Shaft>
-        {this.props.floors.map((floor, index) => {
-          if (index === 0) {
-            return (
-              <Floor key={index}>
-                <FloorBtns>
-                  <button onClick={() => this.props.callElevator(index, true)}>
-                    Up
-                  </button>
-                </FloorBtns>
-              </Floor>
-            );
-          }
-
-          if (index === this.props.floors.length - 1) {
-            return (
-              <Floor key={index}>
-                <FloorBtns>
-                  <button onClick={() => this.props.callElevator(index, false)}>
-                    Down
-                  </button>
-                </FloorBtns>
-              </Floor>
-            );
-          }
-
-          return (
-            <Floor key={index}>
-              <FloorBtns>
-                <button onClick={() => this.props.callElevator(index, true)}>
-                  Up
-                </button>
-                <button onClick={() => this.props.callElevator(index, false)}>
-                  Down
-                </button>
-              </FloorBtns>
-            </Floor>
-          );
-        })}
+        {this.destructuring()}
       </Building>
     );
   }
