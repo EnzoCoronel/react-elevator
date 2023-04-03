@@ -91,25 +91,27 @@ class Elevator extends React.Component<IProps, IState> {
 
     //there is a bug where if you press a btn to fast after the idle-ground floor animation ends,
     //it will close and be stuck
-    if (this.state.queue[0]) {
-      if (this.state.isGoingUp === true) {
-        if (newFloor < this.state.newCount && newDirection !== false)
-          this.setState(() => ({
-            newCount: newFloor,
-          }));
-      }
-      if (this.state.isGoingUp === false) {
-        if (newFloor > this.state.newCount && newDirection !== true)
-          this.setState(() => ({
-            newCount: newFloor,
-          }));
-      }
-    } else
+
+    if (this.state.isGoingUp === true) {
+      if (newFloor < this.state.newCount && newDirection !== false)
+        this.setState(() => ({
+          newCount: newFloor,
+        }));
+    }
+    if (this.state.isGoingUp === false) {
+      if (newFloor > this.state.newCount && newDirection !== true)
+        this.setState(() => ({
+          newCount: newFloor,
+        }));
+    }
+    if (!this.state.queue[0]) {
       this.setState(() => ({
         moving: "left",
         newCount: newFloor,
         isGoingUp: true,
+        stage: 1,
       }));
+    }
   };
 
   nextInQueue = () => {
@@ -117,11 +119,14 @@ class Elevator extends React.Component<IProps, IState> {
     let foundIndex: number;
 
     if (!this.state.queue[1]) {
+      this.addToQueue(0, true);
       this.setState(() => ({
         moving: "left",
         newCount: 0,
         isGoingUp: false,
-        queue: this.state.queue.slice(1),
+        queue: this.state.queue.filter(
+          (item) => item.newCount != this.state.count
+        ),
       }));
       return;
     }
